@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: Taskly API
+  title: Taskly API Documentation
   version: 1.0.0
 paths:
   /api/auth/register:
     post:
-      summary: Register a user
+      summary: Sign up a new user
       tags:
         - Auth
       requestBody:
@@ -25,12 +25,13 @@ paths:
                   type: string
       responses:
         "201":
-          description: User registered
+          description: Registration successful
         "400":
-          description: Bad request
+          description: Invalid input, please check the provided data
+
   /api/auth/login:
     post:
-      summary: Login a user
+      summary: Authenticate user login
       tags:
         - Auth
       requestBody:
@@ -46,14 +47,22 @@ paths:
                   type: string
       responses:
         "200":
-          description: User logged in
+          description: Login successful
         "401":
-          description: Unauthorized
-  /api/organizations:
+          description: Unauthorized, incorrect credentials
+
+  /api/organizations/{organizationId}/boards:
     post:
-      summary: Create an organization
+      summary: Create a board within an organization
       tags:
-        - Organization
+        - Board
+      parameters:
+        - in: path
+          name: organizationId
+          required: true
+          schema:
+            type: string
+          description: The ID of the organization to create the board in
       requestBody:
         required: true
         content:
@@ -63,30 +72,72 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Name of the organization
+                  description: The name of the board to create
                 description:
                   type: string
-                  description: Description of the organization
+                  description: Details about the board
       responses:
         "201":
-          description: Organization Created Success
+          description: Board successfully created within the organization
         "401":
-          description: Unauthorized
-        "404":
-          description: Organization not found
+          description: Unauthorized access, please authenticate
         "400":
-          description: Bad request
-  /api/{organizationId}/addUser:
-    post:
-      summary: Add a user to an oraganization
+          description: Bad request, check input data
+
+    get:
+      summary: Get all boards within an organization
       tags:
-        - Organization
+        - Board
       parameters:
         - in: path
           name: organizationId
           required: true
           schema:
             type: string
+          description: The ID of the organization to retrieve boards from
+      responses:
+        "200":
+          description: List of boards within the organization
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Organization not found
+        "400":
+          description: Bad request, check input data
+
+  /api/boards/{id}:
+    get:
+      summary: Get a specific board by ID
+      tags:
+        - Board
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the board to retrieve
+      responses:
+        "200":
+          description: Successfully retrieved the board
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Board not found
+        "400":
+          description: Bad request, check input data
+
+    put:
+      summary: Update a specific board by ID
+      tags:
+        - Board
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the board to update
       requestBody:
         required: true
         content:
@@ -94,15 +145,166 @@ paths:
             schema:
               type: object
               properties:
-                userId:
+                name:
                   type: string
-                  description: The id of the user to added to an organization
+                  description: The updated name of the board
+                description:
+                  type: string
+                  description: The updated details of the board
+      responses:
+        "200":
+          description: Board successfully updated
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Board not found
+        "400":
+          description: Bad request, check input data
+
+    delete:
+      summary: Delete a specific board by ID
+      tags:
+        - Board
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the board to delete
+      responses:
+        "204":
+          description: Board successfully deleted
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Board not found
+
+  /api/boards/{boardId}/tasks:
+    post:
+      summary: Create a task in a specific board
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+          description: The ID of the board to create the task in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the task
+                description:
+                  type: string
+                  description: Details of the task
       responses:
         "201":
-          description: User added to an organization
+          description: Task successfully created
         "401":
-          description: Unauthorized
-        "404":
-          description: User not found
+          description: Unauthorized access, please authenticate
         "400":
-          description: Bad request
+          description: Bad request, check input data
+
+    get:
+      summary: Get all tasks in a specific board
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+          description: The ID of the board to retrieve tasks from
+      responses:
+        "200":
+          description: List of tasks within the board
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Board not found
+        "400":
+          description: Bad request, check input data
+
+  /api/tasks/{taskId}:
+    get:
+      summary: Get a specific task by ID
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The ID of the task to retrieve
+      responses:
+        "200":
+          description: Successfully retrieved the task
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Task not found
+        "400":
+          description: Bad request, check input data
+
+    put:
+      summary: Update a specific task by ID
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The ID of the task to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The updated title of the task
+                description:
+                  type: string
+                  description: The updated details of the task
+      responses:
+        "200":
+          description: Task successfully updated
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Task not found
+        "400":
+          description: Bad request, check input data
+
+    delete:
+      summary: Delete a specific task by ID
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: The ID of the task to delete
+      responses:
+        "204":
+          description: Task successfully deleted
+        "401":
+          description: Unauthorized access, please authenticate
+        "404":
+          description: Task not found
