@@ -1,5 +1,5 @@
 const Task = require("../models/task");
-const Board = require("../models/Board");
+const Board = require("../models/board");
 const mongoose = require("mongoose");
 
 // Create a new task
