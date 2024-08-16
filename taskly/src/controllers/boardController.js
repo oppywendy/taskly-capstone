@@ -1,4 +1,4 @@
-const Board = require("../models/Board");
+const Board = require("../models/board");
 
 // Create a new board
 exports.createBoard = async (req, res) => {
